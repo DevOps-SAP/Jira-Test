@@ -1,0 +1,57 @@
+_schema-version: "3.2"
+ID: Jira_Test
+version: 0.0.1
+modules:
+- name: Jira_Test-destination-content
+  type: com.sap.application.content
+  requires:
+  - name: Jira_Test-destination-service
+    parameters:
+      content-target: true
+  - name: Jira_Test_html_repo_host
+    parameters:
+      service-key:
+        name: Jira_Test_html_repo_host-key
+  - name: uaa_Jira_Test
+    parameters:
+      service-key:
+        name: uaa_Jira_Test-key
+  parameters:
+    content:
+      instance:
+        destinations:
+        - Name: managedRouter_Jira_Test_html_repo_host
+          ServiceInstanceName: Jira_Test-html5-app-host-service
+          ServiceKeyName: Jira_Test_html_repo_host-key
+          sap.cloud.service: managedRouter
+        - Authentication: OAuth2UserTokenExchange
+          Name: managedRouter_uaa_Jira_Test
+          ServiceInstanceName: Jira_Test-xsuaa-service
+          ServiceKeyName: uaa_Jira_Test-key
+          sap.cloud.service: managedRouter
+        existing_destinations_policy: ignore
+  build-parameters:
+    no-source: true
+resources:
+- name: Jira_Test-destination-service
+  type: org.cloudfoundry.managed-service
+  parameters:
+    config:
+      HTML5Runtime_enabled: true
+      version: 1.0.0
+    service: destination
+    service-name: Jira_Test-destination-service
+    service-plan: lite
+- name: Jira_Test_html_repo_host
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: html5-apps-repo
+    service-name: Jira_Test-html5-app-host-service
+    service-plan: app-host
+- name: uaa_Jira_Test
+  type: org.cloudfoundry.managed-service
+  parameters:
+    path: ./xs-security.json
+    service: xsuaa
+    service-name: Jira_Test-xsuaa-service
+    service-plan: application
